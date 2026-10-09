@@ -90,11 +90,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func refreshLibraries() {
-        ActionManager.refreshLibraries { [weak self] error in
-            guard let error = error else { return }
+        ActionManager.refreshLibraries { [weak self] errorMessage in
+            guard let errorMessage = errorMessage else { return }
 
             DispatchQueue.main.async {
-                self?.present(alert: "Jellyfin Server was unable to refresh libraries: \(error.localizedDescription)")
+                self?.present(alert: "Jellyfin Server was unable to refresh libraries: \(errorMessage)")
             }
         }
     }
