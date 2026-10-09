@@ -71,6 +71,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(withTitle: "Launch App", action: #selector(launchNativeApp), keyEquivalent: "a")
         }
 
+        menu.addItem(withTitle: "Refresh Libraries", action: #selector(refreshLibraries), keyEquivalent: "f")
         menu.addItem(withTitle: "Show Logs", action: #selector(showLogs), keyEquivalent: "d")
         menu.addItem(withTitle: "Restart", action: #selector(restart), keyEquivalent: "r")
         menu.addItem(NSMenuItem.separator())
@@ -86,6 +87,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func launchNativeApp() {
         NSWorkspace.shared.openApplication(at: nativePlayerURL!, configuration: NSWorkspace.OpenConfiguration())
+    }
+
+    @objc private func refreshLibraries() {
+        ActionManager.refreshLibraries { [weak self] error in
+            guard let error = error else { return }
+
+            DispatchQueue.main.async {
+                self?.present(alert: "Jellyfin Server was unable to refresh libraries: \(error.localizedDescription)")
+            }
+        }
     }
 
     @objc private func showLogs() {

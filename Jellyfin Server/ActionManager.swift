@@ -9,10 +9,50 @@
 import AppKit
 import Foundation
 
+enum RefreshLibrariesError: LocalizedError {
+    case invalidURL
+    case unexpectedResponse
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Could not build a request URL for the Jellyfin server."
+        case .unexpectedResponse:
+            return "The Jellyfin server did not accept the refresh request."
+        }
+    }
+}
+
 enum ActionManager {
     static func launchWebUI() {
         let (port, proto, subPath) = getJellyfinNetworkConfig()
         NSWorkspace.shared.open(.init(string: "\(proto)://localhost:\(port)\(subPath)")!)
+    }
+
+    static func refreshLibraries(completion: @escaping (Error?) -> Void) {
+        let (port, proto, subPath) = getJellyfinNetworkConfig()
+
+        guard let url = URL(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh") else {
+            completion(RefreshLibrariesError.invalidURL)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                completion(error)
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, (200 ... 299).contains(httpResponse.statusCode) else {
+                completion(RefreshLibrariesError.unexpectedResponse)
+                return
+            }
+
+            completion(nil)
+        }.resume()
     }
 
     static func showLogs() {
