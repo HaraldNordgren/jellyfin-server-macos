@@ -18,12 +18,7 @@ enum ActionManager {
     static func refreshLibraries(completion: @escaping (String?) -> Void) {
         let (port, proto, subPath) = getJellyfinNetworkConfig()
 
-        guard let url = URL(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh") else {
-            completion("Could not build a request URL for the Jellyfin server.")
-            return
-        }
-
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh")!)
         request.httpMethod = "POST"
 
         URLSession.shared.dataTask(with: request) { _, response, error in
