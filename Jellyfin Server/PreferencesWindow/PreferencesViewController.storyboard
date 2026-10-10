@@ -11,11 +11,11 @@
             <objects>
                 <viewController storyboardIdentifier="PreferencesViewController" id="bU7-R8-ocO" customClass="PreferencesViewController" customModule="Jellyfin_Server" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="tOy-S4-hL0">
-                        <rect key="frame" x="0.0" y="0.0" width="350" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="362"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xgB-oQ-tF1">
-                                <rect key="frame" x="25" y="220" width="300" height="80"/>
+                                <rect key="frame" x="25" y="282" width="300" height="80"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="M6H-N2-AA3"/>
                                     <constraint firstAttribute="width" constant="300" id="jt1-AU-FH4"/>
@@ -23,7 +23,7 @@
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="jellyfin-banner" id="e4N-CF-Dic"/>
                             </imageView>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qEc-pa-mey">
-                                <rect key="frame" x="73" y="194" width="204" height="16"/>
+                                <rect key="frame" x="73" y="256" width="204" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="gGl-zS-3e9"/>
                                     <constraint firstAttribute="width" constant="200" id="kS1-0S-mjy"/>
@@ -43,7 +43,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iV1-fg-N8A">
-                                <rect key="frame" x="113" y="157" width="123" height="18"/>
+                                <rect key="frame" x="113" y="219" width="123" height="18"/>
                                 <buttonCell key="cell" type="check" title="Launch at Login" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Az4-Xj-0Mi">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -52,6 +52,34 @@
                                     <binding destination="bU7-R8-ocO" name="value" keyPath="launchAtLogin.isEnabled" id="HbU-1F-ccK"/>
                                 </connections>
                             </button>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ak1-Lb-7Xa">
+                                <rect key="frame" x="73" y="183" width="204" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="Ak2-Lb-7Xa"/>
+                                </constraints>
+                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="API key for Refresh Libraries" id="Ak3-Lb-7Xa">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <secureTextField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ak4-Fd-7Xa">
+                                <rect key="frame" x="75" y="157" width="200" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="Ak5-Fd-7Xa"/>
+                                </constraints>
+                                <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="center" drawsBackground="YES" usesSingleLineMode="YES" id="Ak6-Fd-7Xa">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <allowedInputSourceLocales>
+                                        <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                                    </allowedInputSourceLocales>
+                                </secureTextFieldCell>
+                                <connections>
+                                    <action selector="apiKeyChanged:" target="bU7-R8-ocO" id="Ak7-Fd-7Xa"/>
+                                </connections>
+                            </secureTextField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gxh-eI-cDG">
                                 <rect key="frame" x="108" y="111" width="134" height="32"/>
                                 <buttonCell key="cell" type="push" title="Launch Web UI" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wE7-Nw-pDc">
@@ -108,7 +136,11 @@
                             <constraint firstItem="xgB-oQ-tF1" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="TXg-MQ-QtM"/>
                             <constraint firstItem="gxh-eI-cDG" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="Xak-9M-JR1"/>
                             <constraint firstAttribute="bottom" secondItem="a23-zM-ylI" secondAttribute="bottom" constant="10" id="Ymx-ng-4SZ"/>
-                            <constraint firstItem="gxh-eI-cDG" firstAttribute="top" secondItem="iV1-fg-N8A" secondAttribute="bottom" constant="20" id="bNt-p3-nGR"/>
+                            <constraint firstItem="gxh-eI-cDG" firstAttribute="top" secondItem="Ak4-Fd-7Xa" secondAttribute="bottom" constant="20" id="bNt-p3-nGR"/>
+                            <constraint firstItem="Ak1-Lb-7Xa" firstAttribute="top" secondItem="iV1-fg-N8A" secondAttribute="bottom" constant="20" id="Ak8-Lb-7Xa"/>
+                            <constraint firstItem="Ak1-Lb-7Xa" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="Ak9-Lb-7Xa"/>
+                            <constraint firstItem="Ak4-Fd-7Xa" firstAttribute="top" secondItem="Ak1-Lb-7Xa" secondAttribute="bottom" constant="4" id="AkA-Fd-7Xa"/>
+                            <constraint firstItem="Ak4-Fd-7Xa" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="AkB-Fd-7Xa"/>
                             <constraint firstItem="hE0-YK-gRX" firstAttribute="top" secondItem="gxh-eI-cDG" secondAttribute="bottom" constant="10" id="jbR-nE-v6k"/>
                             <constraint firstItem="xgB-oQ-tF1" firstAttribute="top" secondItem="tOy-S4-hL0" secondAttribute="top" id="lqW-1I-Euc"/>
                             <constraint firstItem="hE0-YK-gRX" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="o2u-2j-CKZ"/>
@@ -117,6 +149,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="apiKeyField" destination="Ak4-Fd-7Xa" id="AkC-Fd-7Xa"/>
                         <outlet property="copyrightLabel" destination="a23-zM-ylI" id="trm-Z4-WYg"/>
                         <outlet property="versionLabel" destination="qEc-pa-mey" id="Rya-Fg-5pP"/>
                     </connections>

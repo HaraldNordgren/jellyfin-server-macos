@@ -12,6 +12,7 @@ class PreferencesViewController: NSViewController {
     @IBOutlet var versionLabel: NSTextField!
     @objc dynamic var launchAtLogin = LanchAtLoginHelper.kvo
     @IBOutlet var copyrightLabel: NSTextField!
+    @IBOutlet var apiKeyField: NSSecureTextField!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,12 @@ class PreferencesViewController: NSViewController {
 
         let copyright = Bundle.main.infoDictionary?["NSHumanReadableCopyright"] as? String
         copyrightLabel.stringValue = copyright ?? ""
+
+        apiKeyField.stringValue = UserDefaults.standard.string(forKey: apiKeyDefaultsKey) ?? ""
+    }
+
+    @IBAction func apiKeyChanged(_ sender: NSTextField) {
+        UserDefaults.standard.set(sender.stringValue, forKey: apiKeyDefaultsKey)
     }
 
     @IBAction func launchWebUISelected(_: Any) {

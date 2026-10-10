@@ -14,8 +14,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private var windowController = NSWindowController(window: nil)
     private var jellyfinProcess = Process()
-    private var refreshTask: Task<Void, Never>?
-    private var pairingAlertShown = false
 
     func applicationDidFinishLaunching(_: Notification) {
         if !isRunningFromApplicationFolder() {
@@ -92,54 +90,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func refreshLibraries() {
-        guard refreshTask == nil else { return }
+        ActionManager.refreshLibraries { errorMessage in
+            guard let errorMessage = errorMessage else { return }
 
-        refreshTask = Task {
-            do {
-                try await ActionManager.refreshLibraries { code in
-                    DispatchQueue.main.async { self.presentPairing(code: code) }
-                }
-                DispatchQueue.main.async { self.finishRefresh(failure: nil) }
-            } catch {
-                let failure = Task.isCancelled ? nil : error
-                DispatchQueue.main.async { self.finishRefresh(failure: failure) }
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.alertStyle = .warning
+                alert.messageText = "Jellyfin Server was unable to refresh libraries"
+                alert.informativeText = errorMessage
+
+                NSApp.activate(ignoringOtherApps: true)
+                alert.runModal()
             }
-        }
-    }
-
-    private func presentPairing(code: String) {
-        let alert = NSAlert()
-        alert.messageText = "Pair with Jellyfin Server"
-        alert.informativeText = "To refresh libraries from the menu bar, open the Jellyfin web UI, choose Quick Connect in your user menu and enter this code as an administrator:\n\n\(code)"
-        alert.addButton(withTitle: "Cancel")
-
-        pairingAlertShown = true
-        NSApp.activate(ignoringOtherApps: true)
-        let response = alert.runModal()
-        pairingAlertShown = false
-
-        if response == .alertFirstButtonReturn {
-            refreshTask?.cancel()
-        }
-    }
-
-    private func finishRefresh(failure: Error?) {
-        refreshTask = nil
-
-        if pairingAlertShown {
-            NSApp.stopModal()
-        }
-
-        guard let failure = failure else { return }
-
-        DispatchQueue.main.async {
-            let alert = NSAlert()
-            alert.alertStyle = .warning
-            alert.messageText = "Jellyfin Server was unable to refresh libraries"
-            alert.informativeText = failure.localizedDescription
-
-            NSApp.activate(ignoringOtherApps: true)
-            alert.runModal()
         }
     }
 

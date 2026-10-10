@@ -15,41 +15,28 @@ enum ActionManager {
         NSWorkspace.shared.open(.init(string: "\(proto)://localhost:\(port)\(subPath)")!)
     }
 
-    /// Triggers a library scan with the token from Quick Connect, pairing first if there is no valid token yet.
-    static func refreshLibraries(onPairingCode: (String) -> Void) async throws {
-        let (port, proto, subPath) = getJellyfinNetworkConfig()
-        let baseURL = "\(proto)://localhost:\(port)\(subPath)"
-
-        if let token = Keychain.token, try await postLibraryRefresh(baseURL, token: token) {
+    static func refreshLibraries(completion: @escaping (String?) -> Void) {
+        guard let apiKey = UserDefaults.standard.string(forKey: apiKeyDefaultsKey), !apiKey.isEmpty else {
+            completion("Add an API key in Preferences. You can create one in the web UI under Dashboard > API Keys.")
             return
         }
 
-        Keychain.token = nil
-
-        let token = try await QuickConnect.pair(baseURL: baseURL, onCode: onPairingCode)
-
-        guard try await postLibraryRefresh(baseURL, token: token) else {
-            throw ActionError("The user who entered the pairing code must be an administrator.")
-        }
-
-        Keychain.token = token
-    }
-
-    private static func postLibraryRefresh(_ baseURL: String, token: String) async throws -> Bool {
-        var request = URLRequest(url: .init(string: "\(baseURL)/Library/Refresh")!)
+        let (port, proto, subPath) = getJellyfinNetworkConfig()
+        var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh")!)
         request.httpMethod = "POST"
-        request.setValue(QuickConnect.authorizationHeader(token: token), forHTTPHeaderField: "Authorization")
+        request.setValue("MediaBrowser Token=\"\(apiKey)\"", forHTTPHeaderField: "Authorization")
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        switch (response as? HTTPURLResponse)?.statusCode {
-        case .some(200 ... 299):
-            return true
-        case 401, 403:
-            return false
-        default:
-            throw ActionError("The Jellyfin server did not accept the refresh request.")
-        }
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                completion(error.localizedDescription)
+            } else if let httpResponse = response as? HTTPURLResponse, (200 ... 299).contains(httpResponse.statusCode) {
+                completion(nil)
+            } else if (response as? HTTPURLResponse)?.statusCode == 401 {
+                completion("The API key was not accepted. Check it in Preferences.")
+            } else {
+                completion("The Jellyfin server did not accept the refresh request.")
+            }
+        }.resume()
     }
 
     static func showLogs() {

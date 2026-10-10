@@ -46,6 +46,8 @@ let localShareJellyfinFolder: URL = FileManager.default.homeDirectoryForCurrentU
 let applicationSupportJellyfinFolder: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent("/Library/Application Support/jellyfin")
 
+let apiKeyDefaultsKey = "ApiKey"
+
 func directoryExists(path: String) -> Bool {
     var isDirectory: ObjCBool = false
     return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
