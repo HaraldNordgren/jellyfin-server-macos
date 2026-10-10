@@ -96,11 +96,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func refreshLibraries() {
-        ActionManager.refreshLibraries { [weak self] errorMessage in
+        ActionManager.refreshLibraries { errorMessage in
             guard let errorMessage = errorMessage else { return }
 
             DispatchQueue.main.async {
-                self?.present(alert: "Jellyfin Server was unable to refresh libraries: \(errorMessage)")
+                let alert = NSAlert()
+                alert.alertStyle = .warning
+                alert.messageText = "Jellyfin Server was unable to refresh libraries"
+                alert.informativeText = errorMessage
+
+                NSApp.activate(ignoringOtherApps: true)
+                alert.runModal()
             }
         }
     }
