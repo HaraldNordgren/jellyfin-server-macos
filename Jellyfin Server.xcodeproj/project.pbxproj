@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E1A0C0DE2A0000020000AAAA /* QuickConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C0DE2A0000010000AAAA /* QuickConnect.swift */; };
 		0919395322C35C1400392D55 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0919395222C35C1400392D55 /* AppDelegate.swift */; };
 		0919395722C35C1400392D55 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0919395622C35C1400392D55 /* Assets.xcassets */; };
 		0919395A22C35C1400392D55 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0919395822C35C1400392D55 /* Main.storyboard */; };
@@ -36,6 +37,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E1A0C0DE2A0000010000AAAA /* QuickConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickConnect.swift; sourceTree = "<group>"; };
 		0919395222C35C1400392D55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0919395622C35C1400392D55 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0919395922C35C1400392D55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				E174A31A289B8D700092450E /* ActionManager.swift */,
 				0919395222C35C1400392D55 /* AppDelegate.swift */,
 				E1293F4A28A2059B0076A445 /* Helpers.swift */,
+				E1A0C0DE2A0000010000AAAA /* QuickConnect.swift */,
 				E174A320289B926C0092450E /* AlertWindow */,
 				E174A319289B8D520092450E /* PreferencesWindow */,
 				0919395622C35C1400392D55 /* Assets.xcassets */,
@@ -202,6 +205,7 @@
 			files = (
 				E19E5327289B932300A94983 /* AlertWindow.swift in Sources */,
 				E1293F4B28A2059B0076A445 /* Helpers.swift in Sources */,
+				E1A0C0DE2A0000020000AAAA /* QuickConnect.swift in Sources */,
 				0919395322C35C1400392D55 /* AppDelegate.swift in Sources */,
 				E174A318289B86820092450E /* PreferencesWindow.swift in Sources */,
 				E174A314289B855C0092450E /* PreferencesViewController.swift in Sources */,

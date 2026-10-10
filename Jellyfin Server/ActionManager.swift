@@ -15,21 +15,41 @@ enum ActionManager {
         NSWorkspace.shared.open(.init(string: "\(proto)://localhost:\(port)\(subPath)")!)
     }
 
-    static func refreshLibraries(completion: @escaping (String?) -> Void) {
+    /// Triggers a library scan with the token from Quick Connect, pairing first if there is no valid token yet.
+    static func refreshLibraries(onPairingCode: (String) -> Void) async throws {
         let (port, proto, subPath) = getJellyfinNetworkConfig()
+        let baseURL = "\(proto)://localhost:\(port)\(subPath)"
 
-        var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh")!)
+        if let token = Keychain.token, try await postLibraryRefresh(baseURL, token: token) {
+            return
+        }
+
+        Keychain.token = nil
+
+        let token = try await QuickConnect.pair(baseURL: baseURL, onCode: onPairingCode)
+
+        guard try await postLibraryRefresh(baseURL, token: token) else {
+            throw ActionError("The user who entered the pairing code must be an administrator.")
+        }
+
+        Keychain.token = token
+    }
+
+    private static func postLibraryRefresh(_ baseURL: String, token: String) async throws -> Bool {
+        var request = URLRequest(url: .init(string: "\(baseURL)/Library/Refresh")!)
         request.httpMethod = "POST"
+        request.setValue(QuickConnect.authorizationHeader(token: token), forHTTPHeaderField: "Authorization")
 
-        URLSession.shared.dataTask(with: request) { _, response, error in
-            if let error = error {
-                completion(error.localizedDescription)
-            } else if let httpResponse = response as? HTTPURLResponse, (200 ... 299).contains(httpResponse.statusCode) {
-                completion(nil)
-            } else {
-                completion("The Jellyfin server did not accept the refresh request.")
-            }
-        }.resume()
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        switch (response as? HTTPURLResponse)?.statusCode {
+        case .some(200 ... 299):
+            return true
+        case 401, 403:
+            return false
+        default:
+            throw ActionError("The Jellyfin server did not accept the refresh request.")
+        }
     }
 
     static func showLogs() {
