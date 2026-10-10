@@ -10,11 +10,10 @@ import AppKit
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private var windowController = NSWindowController(window: nil)
     private var jellyfinProcess = Process()
-    private let refreshLibrariesItem = NSMenuItem(title: "Refresh Libraries", action: #selector(refreshLibraries), keyEquivalent: "f")
 
     func applicationDidFinishLaunching(_: Notification) {
         if !isRunningFromApplicationFolder() {
@@ -72,19 +71,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menu.addItem(withTitle: "Launch App", action: #selector(launchNativeApp), keyEquivalent: "a")
         }
 
-        menu.addItem(refreshLibrariesItem)
+        menu.addItem(withTitle: "Refresh Libraries", action: #selector(refreshLibraries), keyEquivalent: "f")
         menu.addItem(withTitle: "Show Logs", action: #selector(showLogs), keyEquivalent: "d")
         menu.addItem(withTitle: "Restart", action: #selector(restart), keyEquivalent: "r")
         menu.addItem(NSMenuItem.separator())
         menu.addItem(withTitle: "Preferences", action: #selector(launchPreferences), keyEquivalent: ",")
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
-        menu.delegate = self
         statusItem.menu = menu
-    }
-
-    func menuWillOpen(_: NSMenu) {
-        refreshLibrariesItem.isHidden = !isLocalNetworkLibraryRefreshEnabled()
     }
 
     @objc private func launchWebUI() {

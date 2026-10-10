@@ -18,7 +18,7 @@ enum ActionManager {
     static func refreshLibraries(completion: @escaping (String?) -> Void) {
         let (port, proto, subPath) = getJellyfinNetworkConfig()
 
-        var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh")!)
+        var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/LocalManagement/Library/Refresh")!)
         request.httpMethod = "POST"
 
         URLSession.shared.dataTask(with: request) { _, response, error in
@@ -26,6 +26,8 @@ enum ActionManager {
                 completion(error.localizedDescription)
             } else if let httpResponse = response as? HTTPURLResponse, (200 ... 299).contains(httpResponse.statusCode) {
                 completion(nil)
+            } else if (response as? HTTPURLResponse)?.statusCode == 404 {
+                completion("This version of Jellyfin Server does not support refreshing libraries from the menu bar.")
             } else {
                 completion("The Jellyfin server did not accept the refresh request.")
             }

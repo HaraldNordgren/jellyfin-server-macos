@@ -95,20 +95,6 @@ func getJellyfinNetworkConfig() -> (port: String, proto: String, subPath:String)
     }
 }
 
-func isLocalNetworkLibraryRefreshEnabled() -> Bool {
-    let configFile: URL = directoryExists(path: localShareJellyfinFolder.path)
-        ? localShareJellyfinFolder.appendingPathComponent("config/system.xml")
-        : applicationSupportJellyfinFolder.appendingPathComponent("config/system.xml")
-
-    guard let config = try? XMLDocument(contentsOf: configFile),
-          let value = config.rootElement()?.elements(forName: "AllowLocalNetworkLibraryRefresh").first?.stringValue
-    else {
-        return false
-    }
-
-    return (value as NSString).boolValue
-}
-
 func isNativeClientInstalled() -> Bool {
     return nativePlayerURL != nil
 }
