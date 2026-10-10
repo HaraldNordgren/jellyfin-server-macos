@@ -10,10 +10,11 @@ import AppKit
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private var windowController = NSWindowController(window: nil)
     private var jellyfinProcess = Process()
+    private let refreshLibrariesItem = NSMenuItem(title: "Refresh Libraries", action: #selector(refreshLibraries), keyEquivalent: "f")
 
     func applicationDidFinishLaunching(_: Notification) {
         if !isRunningFromApplicationFolder() {
@@ -71,14 +72,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(withTitle: "Launch App", action: #selector(launchNativeApp), keyEquivalent: "a")
         }
 
-        menu.addItem(withTitle: "Refresh Libraries", action: #selector(refreshLibraries), keyEquivalent: "f")
+        menu.addItem(refreshLibrariesItem)
         menu.addItem(withTitle: "Show Logs", action: #selector(showLogs), keyEquivalent: "d")
         menu.addItem(withTitle: "Restart", action: #selector(restart), keyEquivalent: "r")
         menu.addItem(NSMenuItem.separator())
         menu.addItem(withTitle: "Preferences", action: #selector(launchPreferences), keyEquivalent: ",")
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
+        menu.delegate = self
         statusItem.menu = menu
+    }
+
+    func menuWillOpen(_: NSMenu) {
+        refreshLibrariesItem.isHidden = !isLocalNetworkLibraryRefreshEnabled()
     }
 
     @objc private func launchWebUI() {
@@ -90,17 +96,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func refreshLibraries() {
-        ActionManager.refreshLibraries { errorMessage in
+        ActionManager.refreshLibraries { [weak self] errorMessage in
             guard let errorMessage = errorMessage else { return }
 
             DispatchQueue.main.async {
-                let alert = NSAlert()
-                alert.alertStyle = .warning
-                alert.messageText = "Jellyfin Server was unable to refresh libraries"
-                alert.informativeText = errorMessage
-
-                NSApp.activate(ignoringOtherApps: true)
-                alert.runModal()
+                self?.present(alert: "Jellyfin Server was unable to refresh libraries: \(errorMessage)")
             }
         }
     }

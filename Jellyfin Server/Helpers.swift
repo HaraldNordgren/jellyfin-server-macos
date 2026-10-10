@@ -46,8 +46,6 @@ let localShareJellyfinFolder: URL = FileManager.default.homeDirectoryForCurrentU
 let applicationSupportJellyfinFolder: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent("/Library/Application Support/jellyfin")
 
-let apiKeyDefaultsKey = "ApiKey"
-
 func directoryExists(path: String) -> Bool {
     var isDirectory: ObjCBool = false
     return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
@@ -95,6 +93,20 @@ func getJellyfinNetworkConfig() -> (port: String, proto: String, subPath:String)
     } else {
         return (httpPort, "http", subPath)
     }
+}
+
+func isLocalNetworkLibraryRefreshEnabled() -> Bool {
+    let configFile: URL = directoryExists(path: localShareJellyfinFolder.path)
+        ? localShareJellyfinFolder.appendingPathComponent("config/system.xml")
+        : applicationSupportJellyfinFolder.appendingPathComponent("config/system.xml")
+
+    guard let config = try? XMLDocument(contentsOf: configFile),
+          let value = config.rootElement()?.elements(forName: "AllowLocalNetworkLibraryRefresh").first?.stringValue
+    else {
+        return false
+    }
+
+    return (value as NSString).boolValue
 }
 
 func isNativeClientInstalled() -> Bool {

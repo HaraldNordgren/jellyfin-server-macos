@@ -16,23 +16,16 @@ enum ActionManager {
     }
 
     static func refreshLibraries(completion: @escaping (String?) -> Void) {
-        guard let apiKey = UserDefaults.standard.string(forKey: apiKeyDefaultsKey), !apiKey.isEmpty else {
-            completion("Add an API key in Preferences. You can create one in the web UI under Dashboard > API Keys.")
-            return
-        }
-
         let (port, proto, subPath) = getJellyfinNetworkConfig()
+
         var request = URLRequest(url: .init(string: "\(proto)://localhost:\(port)\(subPath)/Library/Refresh")!)
         request.httpMethod = "POST"
-        request.setValue("MediaBrowser Token=\"\(apiKey)\"", forHTTPHeaderField: "Authorization")
 
         URLSession.shared.dataTask(with: request) { _, response, error in
             if let error = error {
                 completion(error.localizedDescription)
             } else if let httpResponse = response as? HTTPURLResponse, (200 ... 299).contains(httpResponse.statusCode) {
                 completion(nil)
-            } else if (response as? HTTPURLResponse)?.statusCode == 401 {
-                completion("The API key was not accepted. Check it in Preferences.")
             } else {
                 completion("The Jellyfin server did not accept the refresh request.")
             }
